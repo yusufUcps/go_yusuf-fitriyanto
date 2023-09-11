@@ -47,20 +47,7 @@ CREATE TABLE transactions_details (
     price numeric(25, 2),
     created_at timestamp,
     updated_at timestamp,
-	FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
-);
-
--- Membuat tabel transactions
-CREATE TABLE transactions (
-    id serial PRIMARY KEY,
-    user_id int,
-    payment_method_id int,
-    status varchar(10),
-    total_qty int,
-    total_price numeric(25, 2),
-    created_at timestamp,
-    updated_at timestamp
+	PRIMARY KEY (transactions_id, product_id)
 );
 
 -- Membuat tabel payment_methods
@@ -75,12 +62,29 @@ CREATE TABLE payment_methods (
 -- Membuat tabel users
 CREATE TABLE users (
     id serial PRIMARY KEY,
+	nama VARCHAR(255),
+    alamat TEXT,
     status smallint,
     dob date,
     gender char(1),
     created_at timestamp,
     updated_at timestamp
 );
+
+-- Membuat tabel transactions
+CREATE TABLE transactions (
+    id serial PRIMARY KEY,
+    user_id int,
+    payment_method_id int,
+    status varchar(10),
+    total_qty int,
+    total_price numeric(25, 2),
+    created_at timestamp,
+    updated_at timestamp,
+	FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+);
+
 
 -- Membuat tabel kurir dengan field id, name, created_at, updated_at.
 CREATE TABLE kurir (
