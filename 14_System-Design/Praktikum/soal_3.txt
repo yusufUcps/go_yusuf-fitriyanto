@@ -1,0 +1,11 @@
+-redis
+HGETALL users
+
+-Neo4j
+MATCH (u:User)
+RETURN u
+
+-cassandra
+SELECT * FROM users;
+
+
