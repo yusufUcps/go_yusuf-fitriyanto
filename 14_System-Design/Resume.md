@@ -1,4 +1,4 @@
-# Resume - Configuration Management and CLI
+# Resume - System Design
 
  -  Desain sistem adalah proses yang mencakup pemahaman yang mendalam tentang tujuan sistem yang akan dibangun dan lingkupnya. Ini melibatkan identifikasi kebutuhan bisnis, teknis, dan fungsional yang harus dipenuhi oleh sistem.
 
