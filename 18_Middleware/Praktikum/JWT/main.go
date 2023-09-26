@@ -5,10 +5,12 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/labstack/echo/v4"
 	echojwt "github.com/labstack/echo-jwt/v4"
+	"github.com/labstack/echo/v4/middleware" 
 )
 func main() {
 	key := model.Key{}
 	e := echo.New()
+	e.Use(middleware.Logger())
 	auth := e.Group("")
 	auth.Use(echojwt.JWT([]byte(key.Secret)))
 	auth.GET("/users", controller.GetUsersController)
