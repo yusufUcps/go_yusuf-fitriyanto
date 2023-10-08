@@ -26,7 +26,7 @@ func InitDB() {
 		DB_Username: "root",
 		DB_Password: "",
 		DB_Port:     "3306",
-		DB_Host:     "35.193.174.90",
+		DB_Host:     "localhost",
 		DB_Name:     "crud_go",
 	}
 
