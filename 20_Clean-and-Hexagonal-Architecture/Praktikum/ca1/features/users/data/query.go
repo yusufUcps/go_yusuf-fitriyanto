@@ -49,23 +49,12 @@ func (ud *UserData) Login(hp string, password string) (*users.User, error) {
 	return result, nil
 }
 
-func (ud *UserData) GetAllUsers() ([]*users.User, error) {
-	var dbData []*User
+func (ud *UserData) GetAllUsers() ([]users.User, error) {
+	var dbData []users.User
 
 	if err := ud.gorm.Find(&dbData).Error; err != nil {
 		return nil, err
 	}
 
-	var result []*users.User
-	for _, dbUser := range dbData {
-		user := &users.User{
-			ID:       dbUser.ID,
-			Nama:     dbUser.Nama,
-			HP:       dbUser.HP,
-			Password: dbUser.Password,
-		}
-		result = append(result, user)
-	}
-
-	return result, nil
+	return dbData, nil
 }

@@ -57,3 +57,15 @@ func (us *UserService) Login(hp string, password string) (*users.UserCredential,
 
 	return response, nil
 }
+
+func (us *UserService) GetAllUsers() ([]users.User, error) {
+	result, err := us.d.GetAllUsers()
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			return nil, errors.New("data not found")
+		}
+		return nil, errors.New("process failed")
+	}
+
+	return result, nil
+}

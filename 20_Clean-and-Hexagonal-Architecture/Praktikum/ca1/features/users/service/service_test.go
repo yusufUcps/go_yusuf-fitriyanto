@@ -14,43 +14,53 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	generator := helper.NewGeneratorInterface(t)
-	jwt := helper.NewJWTInterface(t)
-	data := mocks.NewUserDataInterface(t)
-	service := New(data, generator, jwt)
-	newUser := users.User{
-		Nama:     "jerry",
-		HP:       "12345",
-		Password: "mantul123",
-	}
+    generator := helper.NewGeneratorInterface(t)
+    jwt := helper.NewJWTInterface(t)
+    data := mocks.NewUserDataInterface(t)
+    service := New(data, generator, jwt)
+    newUser := users.User{
+        Nama:     "yusuf",
+        HP:       "12345",
+        Password: "mantul123",
+    }
 
-	t.Run("Success insert", func(t *testing.T) {
-		generator.On("GenerateUUID").Return("randomUUID", nil).Once()
-		newUser.ID = "randomUUID"
-		data.On("Insert", newUser).Return(&newUser, nil).Once()
+    t.Run("Success insert", func(t *testing.T) {
+        generator.On("GenerateUUID").Return("randomUUID", nil).Once()
+        newUser.ID = "randomUUID"
+        data.On("Insert", newUser).Return(&newUser, nil).Once()
 
-		result, err := service.Register(newUser)
-		assert.Nil(t, err)
-		assert.Equal(t, newUser.ID, result.ID)
-		assert.Equal(t, newUser.Nama, result.Nama)
-		generator.AssertExpectations(t)
-		data.AssertExpectations(t)
-	})
+        result, err := service.Register(newUser)
+        assert.Nil(t, err)
+        assert.Equal(t, newUser.ID, result.ID)
+        assert.Equal(t, newUser.Nama, result.Nama)
+        generator.AssertExpectations(t)
+        data.AssertExpectations(t)
+    })
 
-	t.Run("Generate failed", func(t *testing.T) {
-		generator.On("GenerateUUID").Return("", errors.New("some error on generator")).Once()
+    t.Run("Generate failed", func(t *testing.T) {
+        generator.On("GenerateUUID").Return("", errors.New("some error on generator")).Once()
 
-		result, err := service.Register(newUser)
-		assert.Error(t, err)
-		assert.EqualError(t, err, "id generator failed")
-		assert.Nil(t, result)
-		generator.AssertExpectations(t)
-	})
+        result, err := service.Register(newUser)
+        assert.Error(t, err)
+        assert.EqualError(t, err, "id generator failed")
+        assert.Nil(t, result)
+        generator.AssertExpectations(t)
+    })
 
-	// t.Run("Insert failed", func(t *testing.T) {
-	// Coba dilanjutkan ya
-	// })
+    t.Run("Insert failed", func(t *testing.T) {
+        generator.On("GenerateUUID").Return("randomUUID", nil).Once()
+        newUser.ID = "randomUUID"
+        data.On("Insert", newUser).Return(nil, errors.New("some error on insert")).Once()
+
+        result, err := service.Register(newUser)
+        assert.Error(t, err)
+        assert.EqualError(t, err, "insert process failed")
+        assert.Nil(t, result)
+        generator.AssertExpectations(t)
+        data.AssertExpectations(t)
+    })
 }
+
 
 func TestLogin(t *testing.T) {
 	generator := helper.NewGeneratorInterface(t)
@@ -59,7 +69,7 @@ func TestLogin(t *testing.T) {
 	service := New(data, generator, j)
 	userData := users.User{
 		ID:       "randomUserID",
-		Nama:     "jerry",
+		Nama:     "yusuf",
 		HP:       "12345",
 		Password: "mantul123",
 	}
@@ -75,7 +85,51 @@ func TestLogin(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, "jerry", result.Nama)
+		assert.Equal(t, "yusuf", result.Nama)
 		assert.Equal(t, jwtResult, result.Access)
 	})
+}
+
+func TestGetAllUsers(t *testing.T) {
+    data := mocks.NewUserDataInterface(t)
+    generator := helper.NewGeneratorInterface(t)
+    jwt := helper.NewJWTInterface(t)
+    service := New(data, generator, jwt)
+
+    t.Run("Success - Data Found", func(t *testing.T) {
+        usersData := []users.User{
+            {ID: "1", Nama: "User1", HP: "12345", Password: "pass1"},
+            {ID: "2", Nama: "User2", HP: "67890", Password: "pass2"},
+        }
+
+        data.On("GetAllUsers").Return(usersData, nil).Once()
+
+        result, err := service.GetAllUsers()
+
+        assert.Nil(t, err)
+        assert.Equal(t, usersData, result)
+        data.AssertExpectations(t)
+    })
+
+    t.Run("Data Not Found", func(t *testing.T) {
+        data.On("GetAllUsers").Return(nil, errors.New("not found")).Once()
+
+        result, err := service.GetAllUsers()
+
+        assert.Error(t, err)
+        assert.EqualError(t, err, "data not found")
+        assert.Nil(t, result)
+        data.AssertExpectations(t)
+    })
+
+    t.Run("Process Failed", func(t *testing.T) {
+        data.On("GetAllUsers").Return(nil, errors.New("some error")).Once()
+
+        result, err := service.GetAllUsers()
+
+        assert.Error(t, err)
+        assert.EqualError(t, err, "process failed")
+        assert.Nil(t, result)
+        data.AssertExpectations(t)
+    })
 }

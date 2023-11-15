@@ -17,12 +17,15 @@ type UserCredential struct {
 type UserHandlerInterface interface {
 	Register() echo.HandlerFunc
 	Login() echo.HandlerFunc
+	GetAllUsers() echo.HandlerFunc
 }
 type UserServiceInterface interface {
 	Register(newData User) (*User, error)
 	Login(hp string, password string) (*UserCredential, error)
+	GetAllUsers() ([]User, error)
 }
 type UserDataInterface interface {
 	Insert(newData User) (*User, error)
 	Login(hp string, password string) (*User, error)
+	GetAllUsers() ([]User, error)
 }

@@ -74,3 +74,22 @@ func (uh *UserHandler) Login() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, helper.FormatResponse("success", response))
 	}
 }
+
+func (uh *UserHandler) GetAllUsers() echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		result, err := uh.s.GetAllUsers()
+
+		if err != nil {
+			c.Logger().Error("handler: get all user process error:", err.Error())
+			if strings.Contains(err.Error(), "not found") {
+				return c.JSON(http.StatusNotFound, helper.FormatResponse("fail", nil))
+			}
+			return c.JSON(http.StatusInternalServerError, helper.FormatResponse("fail", nil))
+		}
+
+		return c.JSON(http.StatusOK, helper.FormatResponse("success", result))
+	}
+}
+
+
